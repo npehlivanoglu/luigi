@@ -44,4 +44,18 @@ class PizzaController {
                 .stream()
                 .map(IdnaamPrijs::new);
     }
+
+    @GetMapping(value = "pizzas", params = "naamBevat")
+    Stream<IdnaamPrijs> findByNaamBevat(String naamBevat) {
+        return pizzaService.findByNaamBevat(naamBevat)
+                .stream()
+                .map(IdnaamPrijs::new);
+    }
+
+    @GetMapping(value = "pizzas", params = {"vanPrijs", "totPrijs"})
+    Stream<IdnaamPrijs> findByTussenPrijs(BigDecimal vanPrijs, BigDecimal totPrijs) {
+        return pizzaService.findByPrijsTussen(vanPrijs, totPrijs)
+                .stream()
+                .map(IdnaamPrijs::new);
+    }
 }

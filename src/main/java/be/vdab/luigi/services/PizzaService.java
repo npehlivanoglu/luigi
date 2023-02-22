@@ -30,4 +30,12 @@ public class PizzaService {
     public List<Pizza> findAll() {
         return pizzaRepository.findAll();
     }
+
+    public List<Pizza> findByNaamBevat(String woord) {
+        return pizzaRepository.findByNaamBevat(woord);
+    }
+
+    public List<Pizza> findByPrijsTussen(BigDecimal van, BigDecimal tot) {
+        return pizzaRepository.findByPrijsTussen(van, tot);
+    }
 }
