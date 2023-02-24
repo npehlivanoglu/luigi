@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
     private final static String PIZZAS = "pizzas";
+    private final static String PIZZA_PRIJZEN = "pizzaprijzen";
     private final MockMvc mockMvc;
 
     PizzaControllerTest(MockMvc mockMvc) {
@@ -110,6 +111,37 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
     void createMetVerkeerdeDataMislukt(String bestandsNaam) throws Exception {
         var jsonData = Files.readString(TEST_RESOURCES.resolve(bestandsNaam));
         mockMvc.perform(post("/pizzas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonData))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void patchWijzigtPrijsEmVoegPizzaPrijsToe() throws Exception {
+        var jsonData = Files.readString(TEST_RESOURCES.resolve("correctePrijsWijziging.json"));
+        var id = idVanTest1Pizza();
+        mockMvc.perform(patch("/pizzas/{id}/prijs", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonData))
+                .andExpect(status().isOk());
+        assertThat(countRowsInTableWhere(PIZZAS, "prijs = 7.7 and id = " + id)).isOne();
+    }
+
+    @Test
+    void patchVanOnbestaandePizzaMislukt() throws Exception {
+        var jsonData = Files.readString(TEST_RESOURCES.resolve("correctePrijsWijziging.json"));
+        mockMvc.perform(patch("/pizzas/{id}/prijs",Long.MAX_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonData))
+                .andExpect(status().isNotFound());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"prijsWijzigingZonderPrijs.json", "prijsWijzigingMetNegatievePrijs.json"})
+    void patchMetVerkeerdePrijsMislukt(String bestandsnaam) throws Exception {
+        var jsonData = Files.readString(TEST_RESOURCES.resolve(bestandsnaam));
+        var id = idVanTest1Pizza();
+        mockMvc.perform(patch("/pizzas/{id}/prijs", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonData))
                 .andExpect(status().isBadRequest());

@@ -1,10 +1,13 @@
 package be.vdab.luigi.controllers;
 
 import be.vdab.luigi.domain.Pizza;
+import be.vdab.luigi.domain.PizzaPrijs;
 import be.vdab.luigi.dto.NieuwePizza;
 import be.vdab.luigi.exceptions.PizzaNietGevondenException;
 import be.vdab.luigi.services.PizzaService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -23,6 +26,9 @@ class PizzaController {
         IdnaamPrijs(Pizza pizza) {
             this(pizza.getId(), pizza.getNaam(), pizza.getPrijs());
         }
+    }
+
+    private record PrijsWijziging(@NotNull @Positive BigDecimal prijs) {
     }
 
     @GetMapping("pizzas/aantal")
@@ -68,5 +74,11 @@ class PizzaController {
     long create(@RequestBody @Valid NieuwePizza nieuwePizza) {
         var id = pizzaService.create(nieuwePizza);
         return id;
+    }
+
+    @PatchMapping("pizzas/{id}/prijs")
+    void updatePrijs(@PathVariable long id, @RequestBody @Valid PrijsWijziging wijziging) {
+        var pizzaPrijs = new PizzaPrijs(wijziging.prijs, id);
+        pizzaService.updatePrijs(pizzaPrijs);
     }
 }
