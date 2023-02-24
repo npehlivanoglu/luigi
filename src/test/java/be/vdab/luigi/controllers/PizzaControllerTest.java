@@ -130,7 +130,7 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
     @Test
     void patchVanOnbestaandePizzaMislukt() throws Exception {
         var jsonData = Files.readString(TEST_RESOURCES.resolve("correctePrijsWijziging.json"));
-        mockMvc.perform(patch("/pizzas/{id}/prijs",Long.MAX_VALUE)
+        mockMvc.perform(patch("/pizzas/{id}/prijs", Long.MAX_VALUE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonData))
                 .andExpect(status().isNotFound());
@@ -145,5 +145,15 @@ class PizzaControllerTest extends AbstractTransactionalJUnit4SpringContextTests 
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonData))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void eenPizzaToevoegenDieAlBestaatMislukt() throws Exception {
+        var jsonData = Files.readString(TEST_RESOURCES.resolve("pizzaDieAlBestaat.json"));
+        mockMvc.perform(post("/pizzas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonData))
+                .andExpect(status().isConflict());
+
     }
 }
