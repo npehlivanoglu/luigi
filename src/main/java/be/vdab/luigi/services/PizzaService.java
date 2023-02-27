@@ -67,4 +67,8 @@ public class PizzaService {
         pizzaRepository.updatePrijs(pizzaPrijs.getPizzaId(), pizzaPrijs.getPrijs());
         pizzaPrijsRepository.create(pizzaPrijs);
     }
+
+    public List<PizzaPrijs> findPrijzen(long id) {
+        return pizzaPrijsRepository.findByPizzaId(id);
+    }
 }
